@@ -111,6 +111,7 @@ class campaignController extends Controller
             "message" => "Campaign deleted successfully"
         ], 200);
 
+        
     } catch (\Exception $e) {
 
         return response()->json([
@@ -220,67 +221,18 @@ class campaignController extends Controller
     }
    }
 
-//    public function sendCampaign($id){
-//     try {
-
-//         $campaign = CampaignModel::findOrFail($id);
-
-//         /*
-//         1 = queued
-//         */
-
-//         $campaign->status = 1;
-//         $campaign->save();
-
-//         SendCampaignJob::dispatch($campaign->id);
-
-//         return response()->json([
-//             "success" => true,
-//             "message" => "Campaign queued successfully"
-//         ], 200);
-
-//     } catch (\Exception $e) {
-
-//         return response()->json([
-//             "error" => $e->getMessage()
-//         ], 500);
-
-//     }
-//     }
-
-
-    
     public function sendCampaign($id){
     try {
 
         $campaign = CampaignModel::findOrFail($id);
 
-        /*
-        1 = queued
-        */
-
         $campaign->status = 1;
 
-        /*
-        Create dedicated queue name
-        Example:
-        campaign-15
-        */
-
         $queueName = 'campaign-' . $campaign->id;
-
-        /*
-        Store queue name in database
-        */
 
         $campaign->queue_name = $queueName;
 
         $campaign->save();
-
-        /*
-        Dispatch job to dedicated queue
-        */
-
         SendCampaignJob::dispatch($campaign->id);
             // ->onQueue($queueName);
 
@@ -298,42 +250,4 @@ class campaignController extends Controller
     }
 }
 
-
-
-
-
-//     public function sendCampaign($id){
-//     try {
-
-//         $campaign = CampaignModel::findOrFail($id);
-
-//         /*
-//         1 = queued
-//         */
-
-//         $campaign->status = 1;
-
-//         // Dedicated queue per campaign
-//         $queueName = 'campaign-' . $campaign->id;
-
-//         $campaign->queue_name = $queueName;
-
-//         $campaign->save();
-
-//         SendCampaignJob::dispatch($campaign->id)
-//             ->onQueue($queueName);
-
-//         return response()->json([
-//             "success" => true,
-//             "message" => "Campaign queued successfully"
-//         ], 200);
-
-//     } catch (\Exception $e) {
-
-//         return response()->json([
-//             "error" => $e->getMessage()
-//         ], 500);
-
-//     }
-//    }
 }
